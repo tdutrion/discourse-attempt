@@ -1,0 +1,5 @@
+database:
+  type: postgresql:9.6
+  disk: 2560
+rediscache:
+  type: redis:3.2

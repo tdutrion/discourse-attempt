@@ -1,0 +1,26 @@
+name: 'forum'
+type: "ruby:2.4"
+disk: 2048
+hooks:
+  build: |
+    gem install bundler
+    bundle install --jobs 6 --without development test
+  deploy: RACK_ENV=production bundle exec rake db:migrate
+web:
+  upstream:
+    socket_family: unix
+  commands:
+    start: "unicorn -l $SOCKET -E production config.ru"
+  locations:
+    "/":
+      root: "public"
+      passthru: true
+      expires: 1h
+      allow: true
+relationships:
+    redis: "rediscache:redis"
+    database: "database:database"
+mounts:
+   "/app/log": "shared:files/log"
+   "/app/tmp": "shared:files/tmp"
+   "/app/public/uploads": "shared:files/uploads"
